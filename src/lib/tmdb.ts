@@ -128,18 +128,14 @@ export function getImageUrl(path: string | null, size: "w200" | "w300" | "w500" 
 export interface EmbedServer {
   key: string;
   label: string;
-  getUrl: (tmdbId: number, imdbId: string | null, subInfoUrl?: string) => string;
+  getUrl: (tmdbId: number, imdbId: string | null) => string;
 }
 
 export const EMBED_SERVERS: EmbedServer[] = [
   {
     key: "vidsrc-mov",
     label: "Server 1 (VidSrc Pro)",
-    // vidsrc.mov supports ?sub.info= for external subtitle injection
-    getUrl: (tmdbId, _imdbId, subInfoUrl) => {
-      const base = `https://vidsrc.mov/embed/movie/${tmdbId}`;
-      return subInfoUrl ? `${base}?sub.info=${encodeURIComponent(subInfoUrl)}` : base;
-    },
+    getUrl: (tmdbId) => `https://vidsrc.mov/embed/movie/${tmdbId}`,
   },
   {
     key: "vidsrc-icu",

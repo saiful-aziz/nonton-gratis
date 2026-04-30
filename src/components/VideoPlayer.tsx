@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback } from "react";
 import { Play, AlertTriangle, Subtitles, Server, Loader2, CheckCircle, XCircle } from "lucide-react";
 import { EMBED_SERVERS } from "@/lib/tmdb";
+import SubtitleOverlay from "./SubtitleOverlay";
 
 interface VideoPlayerProps {
   tmdbId: number;
@@ -20,14 +21,8 @@ export default function VideoPlayer({ tmdbId, imdbId, title }: VideoPlayerProps)
   const [serverStatuses, setServerStatuses] = useState<Record<string, ServerStatus>>({});
   const [timeoutIds, setTimeoutIds] = useState<Record<string, ReturnType<typeof setTimeout>>>({});
 
-  // Build subtitle info URL pointing to our API route
-  const subInfoUrl = useMemo(() => {
-    if (typeof window === "undefined") return undefined;
-    return `${window.location.origin}/api/subtitles/${tmdbId}`;
-  }, [tmdbId]);
-
   const currentServer = EMBED_SERVERS.find((s) => s.key === activeServer) || EMBED_SERVERS[0];
-  const embedUrl = currentServer.getUrl(tmdbId, imdbId, subInfoUrl);
+  const embedUrl = currentServer.getUrl(tmdbId, imdbId);
   const status = serverStatuses[activeServer] || "loading";
 
   const startTimeout = useCallback((serverKey: string) => {
@@ -175,12 +170,12 @@ export default function VideoPlayer({ tmdbId, imdbId, title }: VideoPlayerProps)
         <div className="flex items-center gap-2 bg-green-950/50 border border-green-800/30 rounded-lg px-4 py-2.5">
           <CheckCircle className="w-4 h-4 text-green-400 shrink-0" />
           <p className="text-green-300 text-sm">
-            Video siap diputar. Klik ikon <span className="font-medium">CC/subtitle</span> pada player untuk subtitle Indonesia.
+            Video siap. Gunakan tombol <span className="font-medium">Subtitle</span> di bawah player untuk subtitle Indonesia.
           </p>
         </div>
       )}
 
-      {/* Player */}
+      {/* Player + subtitle overlay */}
       <div className="relative aspect-video bg-black rounded-xl overflow-hidden">
         <iframe
           key={activeServer}
@@ -193,6 +188,9 @@ export default function VideoPlayer({ tmdbId, imdbId, title }: VideoPlayerProps)
           onLoad={handleIframeLoad}
         />
 
+        {/* Subtitle overlay rendered on top of iframe */}
+        <SubtitleOverlay tmdbId={tmdbId} />
+
         {status === "loading" && (
           <div className="absolute inset-0 bg-gray-950/70 flex items-center justify-center pointer-events-none">
             <div className="text-center space-y-3">
@@ -202,10 +200,6 @@ export default function VideoPlayer({ tmdbId, imdbId, title }: VideoPlayerProps)
           </div>
         )}
       </div>
-
-      <p className="text-gray-500 text-xs text-center">
-        Subtitle Indonesia di-inject otomatis ke Server 1. Untuk server lain, download subtitle di bawah.
-      </p>
     </div>
   );
 }
