@@ -1,36 +1,87 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🎬 NontonGratis - Website Streaming Film Gratis
 
-## Getting Started
+Website streaming film gratis dengan subtitle Bahasa Indonesia. Dibangun dengan Next.js, Tailwind CSS, dan berbagai API publik.
 
-First, run the development server:
+## Fitur
+
+- 🎥 **Streaming film gratis** dari multiple server (StreamIMDB, VidSrc)
+- 📝 **Subtitle Bahasa Indonesia** dari SubDL.com
+- 🔍 **Pencarian film** dengan data dari TMDB
+- 📂 **Kategori genre** lengkap (Action, Comedy, Horror, dll)
+- 🔥 **Trending, Popular, Top Rated** - film dikelompokkan per kategori
+- 📱 **Responsive** - tampilan optimal di desktop & mobile
+- ⚡ **Server-side rendering** untuk performa optimal
+
+## Tech Stack
+
+- **Framework**: Next.js 16 (App Router)
+- **Styling**: Tailwind CSS
+- **Data Film**: [TMDB API](https://www.themoviedb.org/documentation/api)
+- **Streaming**: [StreamIMDB](https://streamimdb.ru/) + [VidSrc](https://vidsrc.icu/)
+- **Subtitle**: [SubDL API](https://subdl.com/api-doc)
+- **Icons**: Lucide React
+
+## Setup
+
+### 1. Install dependencies
+
+```bash
+cd nonton-gratis
+npm install
+```
+
+### 2. Dapatkan API Keys
+
+#### TMDB API Key (Wajib)
+1. Buat akun di [themoviedb.org](https://www.themoviedb.org/signup)
+2. Pergi ke [Settings > API](https://www.themoviedb.org/settings/api)
+3. Request API key (pilih "Developer")
+4. Copy API Key (v3 auth)
+
+#### SubDL API Key (Opsional - untuk download subtitle)
+1. Buat akun di [subdl.com](https://subdl.com)
+2. Pergi ke Settings/API
+3. Copy API key
+
+### 3. Konfigurasi environment
+
+Edit file `.env.local`:
+
+```env
+NEXT_PUBLIC_TMDB_API_KEY=paste_tmdb_api_key_disini
+NEXT_PUBLIC_SUBDL_API_KEY=paste_subdl_api_key_disini
+```
+
+### 4. Jalankan development server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Buka [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Struktur Halaman
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Route | Deskripsi |
+|-------|-----------|
+| `/` | Beranda - Hero + film trending, populer, top rated |
+| `/movie/[id]` | Detail film + player + subtitle + cast |
+| `/genre` | Daftar semua genre |
+| `/genre/[id]` | Film per genre dengan pagination |
+| `/trending` | Film trending minggu ini |
+| `/top-rated` | Film rating tertinggi |
+| `/search?q=...` | Hasil pencarian |
 
-## Learn More
+## Server Streaming
 
-To learn more about Next.js, take a look at the following resources:
+Website menggunakan multiple server untuk reliabilitas:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. **StreamIMDB** (streamimdb.ru) - Server utama, menggunakan IMDB ID
+2. **VidSrc** (vidsrc.icu) - Fallback, menggunakan TMDB ID
+3. **VidSrc ME** (vidsrc.me) - Fallback kedua, menggunakan IMDB ID
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+User bisa switch antar server jika salah satu tidak berfungsi.
 
-## Deploy on Vercel
+## Disclaimer
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Website ini dibuat untuk tujuan edukasi. Tidak menyimpan file film di server sendiri. Semua konten streaming disediakan oleh pihak ketiga.
