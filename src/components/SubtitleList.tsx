@@ -13,6 +13,11 @@ const langNames: Record<string, string> = {
   EN: "English",
 };
 
+function getDownloadUrl(sub: Subtitle): string {
+  const fileName = `${sub.release_name || sub.name || "subtitle"}.zip`;
+  return `/api/subtitles/download?url=${encodeURIComponent(sub.url)}&name=${encodeURIComponent(fileName)}`;
+}
+
 export default function SubtitleList({ subtitles, movieTitle }: SubtitleListProps) {
   if (subtitles.length === 0) {
     return (
@@ -22,7 +27,7 @@ export default function SubtitleList({ subtitles, movieTitle }: SubtitleListProp
           Subtitle untuk &ldquo;{movieTitle}&rdquo; belum tersedia di SubDL.
         </p>
         <p className="text-gray-500 text-xs mt-1">
-          Subtitle mungkin tersedia langsung di player video (Server 1).
+          Subtitle mungkin tersedia langsung di player video.
         </p>
       </div>
     );
@@ -42,7 +47,7 @@ export default function SubtitleList({ subtitles, movieTitle }: SubtitleListProp
         <div className="flex items-start gap-1.5 mt-2">
           <Info className="w-3.5 h-3.5 text-blue-400 shrink-0 mt-0.5" />
           <p className="text-blue-300/80 text-xs">
-            Server 1 (VidSrc Pro) sudah otomatis inject subtitle. Untuk server lain, download subtitle di bawah lalu gunakan player eksternal.
+            Subtitle sudah tampil otomatis di player. Download file .srt di bawah jika ingin digunakan di player lain.
           </p>
         </div>
       </div>
@@ -82,9 +87,8 @@ function SubGroup({ label, subtitles }: { label: string; subtitles: Subtitle[] }
               </div>
             </div>
             <a
-              href={sub.url}
-              target="_blank"
-              rel="noopener noreferrer"
+              href={getDownloadUrl(sub)}
+              download
               className="flex items-center gap-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-medium px-3 py-1.5 rounded-lg transition-colors shrink-0"
             >
               <Download className="w-3.5 h-3.5" />
