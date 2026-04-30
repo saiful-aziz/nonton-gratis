@@ -23,19 +23,18 @@ interface SubDLResponse {
 }
 
 /**
- * Returns subtitle info in the format expected by vidsrc.mov's ?sub.info= parameter:
- * [{ "file": "url-to-srt-or-vtt", "label": "Indonesian" }]
+ * Returns subtitle info JSON for vidsrc.mov's ?sub.info= parameter.
+ * Each entry points to our /api/subtitles/[tmdbId]/serve?lang=XX endpoint
+ * which extracts and converts the actual subtitle file on the fly.
  */
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ tmdbId: string }> }
 ) {
   const { tmdbId } = await params;
 
   if (!SUBDL_API_KEY) {
-    return NextResponse.json([], {
-      headers: corsHeaders(),
-    });
+    return NextResponse.json([], { headers: corsHeaders() });
   }
 
   try {
@@ -61,7 +60,7 @@ export async function GET(
       return NextResponse.json([], { headers: corsHeaders() });
     }
 
-    // Pick the best subtitle per language (first match = most popular)
+    // Pick best subtitle per language (first = most popular)
     const seen = new Set<string>();
     const result: { file: string; label: string }[] = [];
 
@@ -72,20 +71,23 @@ export async function GET(
       return 0;
     });
 
+    const origin = request.nextUrl.origin;
+
     for (const sub of sorted) {
       if (seen.has(sub.lang)) continue;
       seen.add(sub.lang);
 
-      const dlUrl = `${SUBDL_DL_BASE}/${sub.url.replace(/^\/subtitle\//, "")}`;
+      // Point to our serve endpoint which extracts zip and converts to VTT
+      const zipPath = sub.url.replace(/^\/subtitle\//, "");
+      const serveUrl = `${origin}/api/subtitles/${tmdbId}/serve?zip=${encodeURIComponent(zipPath)}&lang=${sub.lang}`;
+
       result.push({
-        file: dlUrl,
+        file: serveUrl,
         label: LANG_LABELS[sub.lang] || sub.lang,
       });
     }
 
-    return NextResponse.json(result, {
-      headers: corsHeaders(),
-    });
+    return NextResponse.json(result, { headers: corsHeaders() });
   } catch {
     return NextResponse.json([], { headers: corsHeaders() });
   }
