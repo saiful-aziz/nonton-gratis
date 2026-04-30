@@ -39,7 +39,7 @@ export default function Footer() {
         </div>
         <div className="border-t border-gray-800 mt-8 pt-6 text-center">
           <p className="text-gray-500 text-xs">
-            © {new Date().getFullYear()} NontonGratis. Dibuat untuk tujuan edukasi.
+            © {new Date().getFullYear()} NontonGratis. Dibuat oleh Saiful aziz untuk tujuan edukasi.
           </p>
         </div>
       </div>
