@@ -4,7 +4,7 @@ Website streaming film gratis dengan subtitle Bahasa Indonesia. Dibangun dengan 
 
 ## Fitur
 
-- 🎥 **Streaming film gratis** dari multiple server (VidSrc Pro, VidSrc, MultiEmbed, AutoEmbed)
+- 🎥 **Streaming film gratis** dari multiple server (VidSrc Pro, VidSrc, VidSrc CC, AutoEmbed)
 - 📝 **Subtitle Bahasa Indonesia** — overlay otomatis dari SubDL.com + download manual
 - 🔍 **Pencarian film** dengan data dari TMDB
 - 📂 **Kategori genre** lengkap (Action, Comedy, Horror, dll)
@@ -19,7 +19,7 @@ Website streaming film gratis dengan subtitle Bahasa Indonesia. Dibangun dengan 
 - **Framework**: Next.js 16 (App Router, TypeScript)
 - **Styling**: Tailwind CSS
 - **Data Film**: [TMDB API](https://www.themoviedb.org/documentation/api)
-- **Streaming**: [VidSrc Pro](https://vidsrc.mov/) · [VidSrc](https://vidsrc.icu/) · [MultiEmbed](https://multiembed.mov/) · [AutoEmbed](https://autoembed.co/)
+- **Streaming**: [VidSrc Pro](https://vidsrc.mov/) · [VidSrc](https://vidsrc.icu/) · [VidSrc CC](https://vidsrc.cc/) · [AutoEmbed](https://autoembed.co/)
 - **Subtitle**: [SubDL API](https://subdl.com/api-doc)
 - **Icons**: Lucide React
 
@@ -60,7 +60,7 @@ NEXT_PUBLIC_SUBDL_API_KEY=paste_subdl_api_key_disini
 npm run dev
 ```
 
-Buka [http://localhost:3000](http://localhost:3000)
+Buka [http://localhost:3002](http://localhost:3002)
 
 ## Struktur Halaman
 
@@ -80,7 +80,7 @@ Website menggunakan multiple server untuk reliabilitas:
 
 1. **VidSrc Pro** (vidsrc.mov) — Server utama, 1080p, multi-language subtitle
 2. **VidSrc** (vidsrc.icu) — Fallback pertama
-3. **MultiEmbed** (multiembed.mov) — Fallback kedua
+3. **VidSrc CC** (vidsrc.cc) — Fallback kedua, reliable dengan TMDB ID langsung
 4. **AutoEmbed** (autoembed.co) — Fallback ketiga
 
 User bisa switch antar server jika salah satu tidak berfungsi. Status setiap server ditampilkan (loading/ready/error).

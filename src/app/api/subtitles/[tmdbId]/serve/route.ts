@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Readable } from "stream";
 
 const SUBDL_DL_BASE = "https://dl.subdl.com/subtitle";
 
@@ -20,9 +19,20 @@ export async function GET(request: NextRequest) {
 
   try {
     const zipUrl = `${SUBDL_DL_BASE}/${zip}`;
-    const res = await fetch(zipUrl);
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10000); // 10s timeout
+    const res = await fetch(zipUrl, {
+      signal: controller.signal,
+      headers: {
+        "User-Agent": "Mozilla/5.0 (compatible; subtitle-proxy/1.0)",
+        "Accept": "*/*",
+        "Referer": "https://subdl.com/",
+      },
+    });
+    clearTimeout(timeout);
 
     if (!res.ok) {
+      console.error(`SubDL fetch failed: ${res.status} ${res.statusText} for ${zipUrl}`);
       return new NextResponse("Failed to download subtitle", { status: 502 });
     }
 

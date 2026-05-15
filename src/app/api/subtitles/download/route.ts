@@ -20,7 +20,13 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const res = await fetch(url);
+    const res = await fetch(url, {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (compatible; subtitle-proxy/1.0)",
+        "Accept": "*/*",
+        "Referer": "https://subdl.com/",
+      },
+    });
 
     if (!res.ok) {
       return new NextResponse("Failed to download from SubDL", { status: 502 });

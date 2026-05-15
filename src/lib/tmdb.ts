@@ -143,12 +143,9 @@ export const EMBED_SERVERS: EmbedServer[] = [
     getUrl: (tmdbId) => `https://vidsrc.icu/embed/movie/${tmdbId}`,
   },
   {
-    key: "multiembed",
-    label: "Server 3 (MultiEmbed)",
-    getUrl: (tmdbId, imdbId) =>
-      imdbId
-        ? `https://multiembed.mov/?video_id=${imdbId}&tmdb=1`
-        : `https://multiembed.mov/?video_id=${tmdbId}&tmdb=1`,
+    key: "vidsrc-cc",
+    label: "Server 3 (VidSrc CC)",
+    getUrl: (tmdbId) => `https://vidsrc.cc/v2/embed/movie/${tmdbId}`,
   },
   {
     key: "autoembed",

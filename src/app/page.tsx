@@ -2,7 +2,7 @@ import { getTrending, getPopular, getTopRated, getNowPlaying, getUpcoming } from
 import HeroSection from "@/components/HeroSection";
 import MovieRow from "@/components/MovieRow";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600; // revalidate every hour
 
 export default async function HomePage() {
   const [trending, popular, topRated, nowPlaying, upcoming] = await Promise.all([

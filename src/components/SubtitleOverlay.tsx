@@ -92,15 +92,25 @@ export default function SubtitleOverlay({ tmdbId }: SubtitleOverlayProps) {
     setShowMenu(false);
 
     try {
-      const res = await fetch(track.url);
-      if (!res.ok) throw new Error("Failed to fetch");
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 15000); // 15s timeout
+
+      const res = await fetch(track.url, { signal: controller.signal });
+      clearTimeout(timeout);
+
+      if (!res.ok) throw new Error(`Server returned ${res.status}`);
       const vtt = await res.text();
+      if (!vtt || vtt.trim().length === 0) throw new Error("Empty subtitle file");
       const parsed = parseVTT(vtt);
+      if (parsed.length === 0) throw new Error("No cues found in subtitle");
       setCues(parsed);
       setElapsed(0);
       setRunning(true);
-    } catch {
-      setError(`Gagal memuat subtitle ${track.label}`);
+    } catch (err) {
+      const msg = err instanceof Error && err.name === "AbortError"
+        ? "Subtitle load timed out"
+        : `Gagal memuat subtitle ${track.label}`;
+      setError(msg);
       setActiveTrack(null);
       setCues([]);
     } finally {
