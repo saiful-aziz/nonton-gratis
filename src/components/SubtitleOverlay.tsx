@@ -93,7 +93,7 @@ export default function SubtitleOverlay({ tmdbId }: SubtitleOverlayProps) {
 
     try {
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 15000); // 15s timeout
+      const timeout = setTimeout(() => controller.abort(), 25000); // 25s timeout
 
       const res = await fetch(track.url, { signal: controller.signal });
       clearTimeout(timeout);

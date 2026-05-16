@@ -19,17 +19,28 @@ export async function GET(request: NextRequest) {
 
   try {
     const zipUrl = `${SUBDL_DL_BASE}/${zip}`;
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 10000); // 10s timeout
-    const res = await fetch(zipUrl, {
-      signal: controller.signal,
-      headers: {
-        "User-Agent": "Mozilla/5.0 (compatible; subtitle-proxy/1.0)",
-        "Accept": "*/*",
-        "Referer": "https://subdl.com/",
-      },
-    });
-    clearTimeout(timeout);
+
+    // Race between the actual fetch and a timeout
+    const fetchWithTimeout = async () => {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 10000);
+      try {
+        const r = await fetch(zipUrl, {
+          signal: controller.signal,
+          headers: {
+            "User-Agent": "Mozilla/5.0 (compatible; subtitle-proxy/1.0)",
+            "Accept": "*/*",
+            "Referer": "https://subdl.com/",
+          },
+          next: { revalidate: 86400 }, // cache zip for 24h
+        });
+        return r;
+      } finally {
+        clearTimeout(timeout);
+      }
+    };
+
+    const res = await fetchWithTimeout();
 
     if (!res.ok) {
       console.error(`SubDL fetch failed: ${res.status} ${res.statusText} for ${zipUrl}`);
@@ -63,11 +74,22 @@ export async function GET(request: NextRequest) {
 }
 
 /**
- * Minimal ZIP parser — extracts the first .srt, .vtt, or .ass file from a ZIP buffer.
+ * Minimal ZIP parser — extracts the best subtitle file from a ZIP buffer.
+ * Prefers main .srt over forced/SDH variants. Falls back to .vtt or .ass.
  * ZIP format: each file starts with local file header signature 0x04034b50
  */
 function extractSubtitleFromZip(buffer: Buffer): string | null {
   const SIGNATURE = 0x04034b50;
+
+  // First pass: collect all subtitle entries
+  interface ZipEntry {
+    fileName: string;
+    compressionMethod: number;
+    compressedSize: number;
+    uncompressedSize: number;
+    dataStart: number;
+  }
+  const entries: ZipEntry[] = [];
   let offset = 0;
 
   while (offset + 30 <= buffer.length) {
@@ -79,34 +101,45 @@ function extractSubtitleFromZip(buffer: Buffer): string | null {
     const uncompressedSize = buffer.readUInt32LE(offset + 22);
     const fileNameLength = buffer.readUInt16LE(offset + 26);
     const extraFieldLength = buffer.readUInt16LE(offset + 28);
-
     const fileName = buffer.toString("utf-8", offset + 30, offset + 30 + fileNameLength);
     const dataStart = offset + 30 + fileNameLength + extraFieldLength;
 
     const lowerName = fileName.toLowerCase();
-    const isSubtitle = lowerName.endsWith(".srt") || lowerName.endsWith(".vtt") || lowerName.endsWith(".ass");
-
-    if (isSubtitle && compressionMethod === 0 && uncompressedSize > 0) {
-      // Stored (no compression) — read directly
-      return buffer.toString("utf-8", dataStart, dataStart + uncompressedSize);
+    if (lowerName.endsWith(".srt") || lowerName.endsWith(".vtt") || lowerName.endsWith(".ass")) {
+      entries.push({ fileName, compressionMethod, compressedSize, uncompressedSize, dataStart });
     }
 
-    if (isSubtitle && compressionMethod === 8) {
-      // Deflate compressed — use zlib
-      try {
-        const zlib = require("zlib");
-        const compressed = buffer.subarray(dataStart, dataStart + compressedSize);
-        const decompressed = zlib.inflateRawSync(compressed);
-        return decompressed.toString("utf-8");
-      } catch {
-        // Try next file
-      }
-    }
-
-    // Move to next file entry
     offset = dataStart + compressedSize;
   }
 
+  if (entries.length === 0) return null;
+
+  // Pick best entry: avoid forced/SDH variants, prefer plain .srt
+  const isForced = (name: string) => /\.forced\.|\.forced$/i.test(name) || /\bforced\b/i.test(name);
+  const isSDH = (name: string) => /\.sdh\.|\.sdh$/i.test(name) || /\bsdh\b/i.test(name) || /\bhi\b/i.test(name);
+
+  const preferred = entries.find((e) => e.fileName.endsWith(".srt") && !isForced(e.fileName) && !isSDH(e.fileName))
+    ?? entries.find((e) => e.fileName.endsWith(".srt"))
+    ?? entries.find((e) => e.fileName.endsWith(".vtt"))
+    ?? entries[0];
+
+  return extractEntry(buffer, preferred);
+}
+
+function extractEntry(buffer: Buffer, entry: { compressionMethod: number; compressedSize: number; uncompressedSize: number; dataStart: number }): string | null {
+  if (entry.compressionMethod === 0 && entry.uncompressedSize > 0) {
+    return buffer.toString("utf-8", entry.dataStart, entry.dataStart + entry.uncompressedSize);
+  }
+  if (entry.compressionMethod === 8) {
+    try {
+      const zlib = require("zlib");
+      const compressed = buffer.subarray(entry.dataStart, entry.dataStart + entry.compressedSize);
+      const decompressed = zlib.inflateRawSync(compressed);
+      return decompressed.toString("utf-8");
+    } catch {
+      return null;
+    }
+  }
   return null;
 }
 
