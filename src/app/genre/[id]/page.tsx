@@ -8,6 +8,8 @@ interface GenreMoviesPageProps {
   searchParams: Promise<{ page?: string }>;
 }
 
+export const revalidate = 3600; // cache for 1 hour
+
 export default async function GenreMoviesPage({ params, searchParams }: GenreMoviesPageProps) {
   const { id } = await params;
   const { page } = await searchParams;

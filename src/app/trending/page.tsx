@@ -2,7 +2,7 @@ import { getTrending } from "@/lib/tmdb";
 import MovieGrid from "@/components/MovieGrid";
 import Pagination from "@/components/Pagination";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600; // cache for 1 hour
 
 interface TrendingPageProps {
   searchParams: Promise<{ page?: string }>;

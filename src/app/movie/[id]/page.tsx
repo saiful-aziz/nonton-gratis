@@ -11,6 +11,8 @@ interface MoviePageProps {
   params: Promise<{ id: string }>;
 }
 
+export const revalidate = 3600; // cache movie pages for 1 hour
+
 export default async function MoviePage({ params }: MoviePageProps) {
   const { id } = await params;
   const movieId = parseInt(id, 10);
