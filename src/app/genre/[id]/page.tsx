@@ -8,7 +8,7 @@ interface GenreMoviesPageProps {
   searchParams: Promise<{ page?: string }>;
 }
 
-export const revalidate = 3600; // cache for 1 hour
+export const dynamic = "force-dynamic"; // render on demand, no build-time pre-render
 
 export default async function GenreMoviesPage({ params, searchParams }: GenreMoviesPageProps) {
   const { id } = await params;

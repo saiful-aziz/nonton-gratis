@@ -54,13 +54,17 @@ NEXT_PUBLIC_TMDB_API_KEY=paste_tmdb_api_key_disini
 NEXT_PUBLIC_SUBDL_API_KEY=paste_subdl_api_key_disini
 ```
 
-### 4. Jalankan development server
+### 4. Build dan jalankan
 
 ```bash
-npm run dev
+npm run build
+npm run start
 ```
 
 Buka [http://localhost:3002](http://localhost:3002)
+
+> **Catatan:** `npm run start` membutuhkan `npm run build` terlebih dahulu, tapi jauh lebih cepat dari `npm run dev`.
+> Gunakan `npm run dev` hanya saat aktif mengembangkan (ada hot reload, tapi load lebih lambat).
 
 ## Struktur Halaman
 

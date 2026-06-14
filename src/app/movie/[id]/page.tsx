@@ -11,7 +11,7 @@ interface MoviePageProps {
   params: Promise<{ id: string }>;
 }
 
-export const revalidate = 3600; // cache movie pages for 1 hour
+export const dynamic = "force-dynamic"; // render on demand, no build-time pre-render
 
 export default async function MoviePage({ params }: MoviePageProps) {
   const { id } = await params;
