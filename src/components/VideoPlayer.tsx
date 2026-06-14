@@ -176,23 +176,24 @@ export default function VideoPlayer({ tmdbId, imdbId, title }: VideoPlayerProps)
       )}
 
       {/* Player + subtitle overlay */}
-      <div className="relative aspect-video bg-black rounded-xl overflow-hidden">
+      <div className="relative aspect-video bg-black rounded-xl">
         <iframe
           key={activeServer}
           src={embedUrl}
-          className="w-full h-full"
+          className="w-full h-full rounded-xl"
           allowFullScreen
-          allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+          allow="autoplay; encrypted-media; picture-in-picture; fullscreen *"
           referrerPolicy="origin"
           title={`Tonton ${title}`}
           onLoad={handleIframeLoad}
+          style={{ border: "none" }}
         />
 
         {/* Subtitle overlay rendered on top of iframe */}
         <SubtitleOverlay tmdbId={tmdbId} />
 
         {status === "loading" && (
-          <div className="absolute inset-0 bg-gray-950/70 flex items-center justify-center pointer-events-none">
+          <div className="absolute inset-0 bg-gray-950/70 flex items-center justify-center pointer-events-none rounded-xl">
             <div className="text-center space-y-3">
               <Loader2 className="w-10 h-10 text-red-500 animate-spin mx-auto" />
               <p className="text-gray-300 text-sm">Memuat player...</p>
