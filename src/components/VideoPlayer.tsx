@@ -212,7 +212,7 @@ export default function VideoPlayer({ tmdbId, imdbId, title }: VideoPlayerProps)
         />
 
         {/* Subtitle overlay rendered on top of iframe */}
-        <SubtitleOverlay tmdbId={tmdbId} />
+        <SubtitleOverlay tmdbId={tmdbId} isFullscreen={isFullscreen} />
 
         {/* Custom fullscreen button — puts wrapper+overlay into fullscreen */}
         <button

@@ -17,9 +17,10 @@ interface Cue {
 
 interface SubtitleOverlayProps {
   tmdbId: number;
+  isFullscreen?: boolean;
 }
 
-export default function SubtitleOverlay({ tmdbId }: SubtitleOverlayProps) {
+export default function SubtitleOverlay({ tmdbId, isFullscreen = false }: SubtitleOverlayProps) {
   const [tracks, setTracks] = useState<SubtitleTrack[]>([]);
   const [activeTrack, setActiveTrack] = useState<string | null>(null);
   const [lastTrack, setLastTrack] = useState<SubtitleTrack | null>(null);
@@ -148,7 +149,7 @@ export default function SubtitleOverlay({ tmdbId }: SubtitleOverlayProps) {
       {/* Subtitle text — sits above the controls bar */}
       {currentText && (
         <div className="absolute bottom-14 left-0 right-0 flex justify-center pointer-events-none z-20 px-4">
-          <div className="bg-black/80 text-white text-sm sm:text-base px-4 py-2 rounded-lg max-w-[90%] text-center leading-relaxed">
+          <div className={`bg-black/80 text-white px-4 py-2 rounded-lg max-w-[90%] text-center leading-relaxed ${isFullscreen ? "text-2xl sm:text-3xl" : "text-sm sm:text-base"}`}>
             {currentText.split("\n").map((line, i) => (
               <span key={i}>
                 {line}
