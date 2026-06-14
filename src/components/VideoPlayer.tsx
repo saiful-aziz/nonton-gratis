@@ -184,6 +184,7 @@ export default function VideoPlayer({ tmdbId, imdbId, title }: VideoPlayerProps)
           allowFullScreen
           allow="autoplay; encrypted-media; picture-in-picture; fullscreen *"
           referrerPolicy="origin"
+          sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-fullscreen"
           title={`Tonton ${title}`}
           onLoad={handleIframeLoad}
           style={{ border: "none" }}
