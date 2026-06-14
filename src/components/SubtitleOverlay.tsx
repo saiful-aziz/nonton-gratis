@@ -62,6 +62,17 @@ export default function SubtitleOverlay({ tmdbId }: SubtitleOverlayProps) {
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
+  // Pause subtitle when user switches tabs / minimizes window
+  useEffect(() => {
+    function handleVisibility() {
+      if (document.hidden) {
+        setRunning(false);
+      }
+    }
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () => document.removeEventListener("visibilitychange", handleVisibility);
+  }, []);
+
   // Timer for subtitle sync
   useEffect(() => {
     if (running) {
