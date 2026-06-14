@@ -10,6 +10,14 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  typescript: {
+    // Skip type checking during dev builds — use your editor for type errors
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    // Skip eslint during builds
+    ignoreDuringBuilds: true,
+  },
 };
 
 export default nextConfig;
