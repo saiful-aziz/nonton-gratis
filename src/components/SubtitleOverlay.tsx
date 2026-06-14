@@ -22,6 +22,7 @@ interface SubtitleOverlayProps {
 export default function SubtitleOverlay({ tmdbId }: SubtitleOverlayProps) {
   const [tracks, setTracks] = useState<SubtitleTrack[]>([]);
   const [activeTrack, setActiveTrack] = useState<string | null>(null);
+  const [lastTrack, setLastTrack] = useState<SubtitleTrack | null>(null);
   const [cues, setCues] = useState<Cue[]>([]);
   const [currentText, setCurrentText] = useState("");
   const [showMenu, setShowMenu] = useState(false);
@@ -89,11 +90,12 @@ export default function SubtitleOverlay({ tmdbId }: SubtitleOverlayProps) {
     setLoading(true);
     setError(null);
     setActiveTrack(track.lang);
+    setLastTrack(track);
     setShowMenu(false);
 
     try {
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 25000); // 25s timeout
+      const timeout = setTimeout(() => controller.abort(), 12000); // 12s timeout
 
       const res = await fetch(track.url, { signal: controller.signal });
       clearTimeout(timeout);
@@ -108,7 +110,7 @@ export default function SubtitleOverlay({ tmdbId }: SubtitleOverlayProps) {
       setRunning(true);
     } catch (err) {
       const msg = err instanceof Error && err.name === "AbortError"
-        ? "Subtitle load timed out"
+        ? "Timeout — coba lagi"
         : `Gagal memuat subtitle ${track.label}`;
       setError(msg);
       setActiveTrack(null);
@@ -199,7 +201,17 @@ export default function SubtitleOverlay({ tmdbId }: SubtitleOverlayProps) {
             <span className="text-gray-500 text-xs">Memuat subtitle...</span>
           )}
           {error && (
-            <span className="text-red-400 text-xs">{error}</span>
+            <span className="text-red-400 text-xs flex items-center gap-2">
+              {error}
+              {lastTrack && (
+                <button
+                  onClick={() => loadTrack(lastTrack)}
+                  className="underline text-red-300 hover:text-white transition-colors"
+                >
+                  Coba lagi
+                </button>
+              )}
+            </span>
           )}
         </div>
 
