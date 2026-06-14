@@ -162,6 +162,27 @@ export default function SubtitleOverlay({ tmdbId, isFullscreen = false }: Subtit
 
       {/* Controls bar — absolutely positioned at the bottom of the player, visible in fullscreen too */}
       <div className="absolute bottom-0 left-0 right-0 z-20 flex items-center justify-between px-3 py-2 bg-gradient-to-t from-black/70 to-transparent">
+        {/* Left: loading / error status */}
+        <div className="flex items-center gap-2">
+          {loading && (
+            <span className="text-gray-400 text-xs">Memuat subtitle...</span>
+          )}
+          {error && (
+            <span className="text-red-400 text-xs flex items-center gap-2">
+              {error}
+              {lastTrack && (
+                <button
+                  onClick={() => loadTrack(lastTrack)}
+                  className="underline text-red-300 hover:text-white transition-colors"
+                >
+                  Coba lagi
+                </button>
+              )}
+            </span>
+          )}
+        </div>
+
+        {/* Right: CC selector + sync controls */}
         <div className="flex items-center gap-2">
           {/* CC button + menu */}
           <div className="relative" ref={menuRef}>
@@ -181,7 +202,7 @@ export default function SubtitleOverlay({ tmdbId, isFullscreen = false }: Subtit
             </button>
 
             {showMenu && (
-              <div className="absolute bottom-full mb-2 left-0 bg-gray-900 border border-gray-700 rounded-lg shadow-xl overflow-hidden min-w-[160px] z-30">
+              <div className="absolute bottom-full mb-2 right-0 bg-gray-900 border border-gray-700 rounded-lg shadow-xl overflow-hidden min-w-[160px] z-30">
                 <button
                   onClick={disableSubtitle}
                   className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${
@@ -209,55 +230,38 @@ export default function SubtitleOverlay({ tmdbId, isFullscreen = false }: Subtit
             )}
           </div>
 
-          {loading && (
-            <span className="text-gray-400 text-xs">Memuat subtitle...</span>
-          )}
-          {error && (
-            <span className="text-red-400 text-xs flex items-center gap-2">
-              {error}
-              {lastTrack && (
-                <button
-                  onClick={() => loadTrack(lastTrack)}
-                  className="underline text-red-300 hover:text-white transition-colors"
-                >
-                  Coba lagi
-                </button>
-              )}
-            </span>
+          {/* Sync controls — only shown when a track is active */}
+          {activeTrack && cues.length > 0 && (
+            <>
+              <button
+                onClick={() => setRunning(!running)}
+                className="px-2 py-1 bg-black/60 hover:bg-black/80 text-gray-300 text-xs rounded transition-colors"
+              >
+                {running ? "⏸ Pause" : "▶ Play"} Sub
+              </button>
+              <button
+                onClick={() => setElapsed((e) => Math.max(0, e - 5))}
+                className="px-2 py-1 bg-black/60 hover:bg-black/80 text-gray-300 text-xs rounded transition-colors"
+              >
+                -5s
+              </button>
+              <button
+                onClick={() => setElapsed((e) => e + 5)}
+                className="px-2 py-1 bg-black/60 hover:bg-black/80 text-gray-300 text-xs rounded transition-colors"
+              >
+                +5s
+              </button>
+              <TimeInput elapsed={elapsed} onCommit={(s) => setElapsed(s)} />
+              <button
+                onClick={disableSubtitle}
+                className="p-1 text-gray-400 hover:text-red-400 transition-colors"
+                title="Matikan subtitle"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </>
           )}
         </div>
-
-        {/* Sync controls */}
-        {activeTrack && cues.length > 0 && (
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setRunning(!running)}
-              className="px-2 py-1 bg-black/60 hover:bg-black/80 text-gray-300 text-xs rounded transition-colors"
-            >
-              {running ? "⏸ Pause" : "▶ Play"} Sub
-            </button>
-            <button
-              onClick={() => setElapsed((e) => Math.max(0, e - 5))}
-              className="px-2 py-1 bg-black/60 hover:bg-black/80 text-gray-300 text-xs rounded transition-colors"
-            >
-              -5s
-            </button>
-            <button
-              onClick={() => setElapsed((e) => e + 5)}
-              className="px-2 py-1 bg-black/60 hover:bg-black/80 text-gray-300 text-xs rounded transition-colors"
-            >
-              +5s
-            </button>
-            <TimeInput elapsed={elapsed} onCommit={(s) => setElapsed(s)} />
-            <button
-              onClick={disableSubtitle}
-              className="p-1 text-gray-400 hover:text-red-400 transition-colors"
-              title="Matikan subtitle"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        )}
       </div>
     </>
   );
