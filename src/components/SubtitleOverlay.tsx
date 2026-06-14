@@ -236,9 +236,7 @@ export default function SubtitleOverlay({ tmdbId }: SubtitleOverlayProps) {
             >
               +5s
             </button>
-            <span className="text-gray-500 text-xs font-mono">
-              {formatTime(elapsed)}
-            </span>
+            <TimeInput elapsed={elapsed} onCommit={(s) => setElapsed(s)} />
             {activeTrack && (
               <button
                 onClick={disableSubtitle}
@@ -253,6 +251,68 @@ export default function SubtitleOverlay({ tmdbId }: SubtitleOverlayProps) {
       </div>
     </>
   );
+}
+
+/** Editable time input — click to edit, shows HH:MM:SS or MM:SS */
+function TimeInput({ elapsed, onCommit }: { elapsed: number; onCommit: (s: number) => void }) {
+  const [editing, setEditing] = useState(false);
+  const [value, setValue] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const startEdit = () => {
+    setValue(formatTime(elapsed));
+    setEditing(true);
+    setTimeout(() => inputRef.current?.select(), 0);
+  };
+
+  const commit = () => {
+    const parsed = parseInputTime(value);
+    if (parsed !== null) onCommit(parsed);
+    setEditing(false);
+  };
+
+  const handleKey = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") commit();
+    if (e.key === "Escape") setEditing(false);
+  };
+
+  if (editing) {
+    return (
+      <input
+        ref={inputRef}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        onBlur={commit}
+        onKeyDown={handleKey}
+        className="w-20 bg-gray-700 text-white text-xs font-mono px-2 py-1 rounded border border-gray-500 focus:outline-none focus:border-red-500"
+        placeholder="1:23:45"
+        title="Format: m:ss atau h:mm:ss"
+      />
+    );
+  }
+
+  return (
+    <button
+      onClick={startEdit}
+      className="text-gray-400 hover:text-white text-xs font-mono px-2 py-1 bg-gray-800 hover:bg-gray-700 rounded transition-colors"
+      title="Klik untuk set waktu subtitle"
+    >
+      {formatTime(elapsed)}
+    </button>
+  );
+}
+
+/** Parse user-typed time: h:mm:ss, m:ss, or plain seconds */
+function parseInputTime(input: string): number | null {
+  const trimmed = input.trim();
+  // Plain number (seconds)
+  if (/^\d+(\.\d+)?$/.test(trimmed)) return parseFloat(trimmed);
+  // m:ss or h:mm:ss
+  const parts = trimmed.split(":").map((p) => parseFloat(p));
+  if (parts.some(isNaN)) return null;
+  if (parts.length === 2) return parts[0] * 60 + parts[1];
+  if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+  return null;
 }
 
 /** Parse WebVTT content into cue objects */
