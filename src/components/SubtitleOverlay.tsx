@@ -134,9 +134,9 @@ export default function SubtitleOverlay({ tmdbId }: SubtitleOverlayProps) {
 
   return (
     <>
-      {/* Subtitle text overlay — positioned above the player */}
+      {/* Subtitle text — sits above the controls bar */}
       {currentText && (
-        <div className="absolute bottom-12 left-0 right-0 flex justify-center pointer-events-none z-20 px-4">
+        <div className="absolute bottom-14 left-0 right-0 flex justify-center pointer-events-none z-20 px-4">
           <div className="bg-black/80 text-white text-sm sm:text-base px-4 py-2 rounded-lg max-w-[90%] text-center leading-relaxed">
             {currentText.split("\n").map((line, i) => (
               <span key={i}>
@@ -148,8 +148,8 @@ export default function SubtitleOverlay({ tmdbId }: SubtitleOverlayProps) {
         </div>
       )}
 
-      {/* Controls bar */}
-      <div className="flex items-center justify-between mt-2">
+      {/* Controls bar — absolutely positioned at the bottom of the player, visible in fullscreen too */}
+      <div className="absolute bottom-0 left-0 right-0 z-20 flex items-center justify-between px-3 py-2 bg-gradient-to-t from-black/70 to-transparent">
         <div className="flex items-center gap-2">
           {/* CC button + menu */}
           <div className="relative" ref={menuRef}>
@@ -158,7 +158,7 @@ export default function SubtitleOverlay({ tmdbId }: SubtitleOverlayProps) {
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                 activeTrack
                   ? "bg-red-600 text-white"
-                  : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+                  : "bg-black/60 text-gray-300 hover:bg-black/80"
               }`}
             >
               <Subtitles className="w-4 h-4" />
@@ -198,7 +198,7 @@ export default function SubtitleOverlay({ tmdbId }: SubtitleOverlayProps) {
           </div>
 
           {loading && (
-            <span className="text-gray-500 text-xs">Memuat subtitle...</span>
+            <span className="text-gray-400 text-xs">Memuat subtitle...</span>
           )}
           {error && (
             <span className="text-red-400 text-xs flex items-center gap-2">
@@ -220,32 +220,30 @@ export default function SubtitleOverlay({ tmdbId }: SubtitleOverlayProps) {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setRunning(!running)}
-              className="px-2 py-1 bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs rounded transition-colors"
+              className="px-2 py-1 bg-black/60 hover:bg-black/80 text-gray-300 text-xs rounded transition-colors"
             >
               {running ? "⏸ Pause" : "▶ Play"} Sub
             </button>
             <button
               onClick={() => setElapsed((e) => Math.max(0, e - 5))}
-              className="px-2 py-1 bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs rounded transition-colors"
+              className="px-2 py-1 bg-black/60 hover:bg-black/80 text-gray-300 text-xs rounded transition-colors"
             >
               -5s
             </button>
             <button
               onClick={() => setElapsed((e) => e + 5)}
-              className="px-2 py-1 bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs rounded transition-colors"
+              className="px-2 py-1 bg-black/60 hover:bg-black/80 text-gray-300 text-xs rounded transition-colors"
             >
               +5s
             </button>
             <TimeInput elapsed={elapsed} onCommit={(s) => setElapsed(s)} />
-            {activeTrack && (
-              <button
-                onClick={disableSubtitle}
-                className="p-1 text-gray-500 hover:text-red-400 transition-colors"
-                title="Matikan subtitle"
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
-            )}
+            <button
+              onClick={disableSubtitle}
+              className="p-1 text-gray-400 hover:text-red-400 transition-colors"
+              title="Matikan subtitle"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
           </div>
         )}
       </div>
