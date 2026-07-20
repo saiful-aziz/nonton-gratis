@@ -77,9 +77,9 @@ export async function GET(
       if (seen.has(sub.lang)) continue;
       seen.add(sub.lang);
 
-      // Point to our serve endpoint which extracts zip and converts to VTT
+      // Use relative URL so it works on any domain (localhost or production)
       const zipPath = sub.url.replace(/^\/subtitle\//, "");
-      const serveUrl = `${origin}/api/subtitles/${tmdbId}/serve?zip=${encodeURIComponent(zipPath)}&lang=${sub.lang}`;
+      const serveUrl = `/api/subtitles/${tmdbId}/serve?zip=${encodeURIComponent(zipPath)}&lang=${sub.lang}`;
 
       result.push({
         file: serveUrl,
