@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 const SUBDL_API_KEY = process.env.NEXT_PUBLIC_SUBDL_API_KEY || "";
 const SUBDL_BASE = "https://api.subdl.com/api/v1/subtitles";
-const SUBDL_DL_BASE = "https://dl.subdl.com/subtitle";
 
 const LANG_LABELS: Record<string, string> = {
   ID: "Indonesian",
@@ -22,11 +21,6 @@ interface SubDLResponse {
   subtitles?: SubDLSubtitle[];
 }
 
-/**
- * Returns subtitle info JSON for vidsrc.mov's ?sub.info= parameter.
- * Each entry points to our /api/subtitles/[tmdbId]/serve?lang=XX endpoint
- * which extracts and converts the actual subtitle file on the fly.
- */
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ tmdbId: string }> }
@@ -47,7 +41,7 @@ export async function GET(
     });
 
     const res = await fetch(`${SUBDL_BASE}?${searchParams}`, {
-      next: { revalidate: 86400 },
+      next: { revalidate: 3600 }, // cache SubDL search for 1h
     });
 
     if (!res.ok) {
@@ -60,25 +54,22 @@ export async function GET(
       return NextResponse.json([], { headers: corsHeaders() });
     }
 
-    // Pick best subtitle per language (first = most popular)
     const seen = new Set<string>();
     const result: { file: string; label: string }[] = [];
 
-    // Sort: Indonesian first
     const sorted = [...data.subtitles].sort((a, b) => {
       if (a.lang === "ID" && b.lang !== "ID") return -1;
       if (a.lang !== "ID" && b.lang === "ID") return 1;
       return 0;
     });
 
-    const origin = request.nextUrl.origin;
-
     for (const sub of sorted) {
       if (seen.has(sub.lang)) continue;
       seen.add(sub.lang);
 
-      // Use relative URL so it works on any domain (localhost or production)
-      const zipPath = sub.url.replace(/^\/subtitle\//, "");
+      // Strip leading /subtitle/ prefix and any query string (e.g. ?api_key=...)
+      // then use a relative URL so it works on any domain
+      const zipPath = sub.url.replace(/^\/subtitle\//, "").split("?")[0];
       const serveUrl = `/api/subtitles/${tmdbId}/serve?zip=${encodeURIComponent(zipPath)}&lang=${sub.lang}`;
 
       result.push({
@@ -97,6 +88,7 @@ function corsHeaders(): Record<string, string> {
   return {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "GET",
-    "Cache-Control": "public, max-age=86400",
+    // No caching — response contains relative URLs that must be fresh
+    "Cache-Control": "no-store",
   };
 }
