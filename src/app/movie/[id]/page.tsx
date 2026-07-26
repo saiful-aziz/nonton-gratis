@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Star, Clock, Calendar, Globe } from "lucide-react";
-import { getMovieDetail, getMovieCredits, getSimilarMovies, getImageUrl } from "@/lib/tmdb";
+import { getMovieDetail, getMovieCredits, getSimilarMovies, getMovieVideos, getImageUrl } from "@/lib/tmdb";
 import { searchSubtitles } from "@/lib/subtitles";
 import VideoPlayer from "@/components/VideoPlayer";
 import SubtitleList from "@/components/SubtitleList";
@@ -26,10 +26,11 @@ export default async function MoviePage({ params }: MoviePageProps) {
     notFound();
   }
 
-  const [credits, similar, subtitles] = await Promise.all([
+  const [credits, similar, subtitles, videos] = await Promise.all([
     getMovieCredits(movieId).catch(() => ({ cast: [] })),
     getSimilarMovies(movieId).catch(() => ({ page: 1, results: [], total_pages: 0, total_results: 0 })),
     searchSubtitles(movieId).catch(() => []),
+    getMovieVideos(movieId).catch(() => []),
   ]);
 
   const year = movie.release_date ? new Date(movie.release_date).getFullYear() : "N/A";
@@ -142,6 +143,56 @@ export default async function MoviePage({ params }: MoviePageProps) {
           <h2 className="text-white text-xl font-bold mb-4">📝 Subtitle</h2>
           <SubtitleList subtitles={subtitles} movieTitle={movie.title} />
         </div>
+
+        {/* Trailer */}
+        {videos.length > 0 && (
+          <div className="mb-10">
+            <h2 className="text-white text-xl font-bold mb-4">🎞️ Trailer</h2>
+            <div className="space-y-4">
+              {/* Primary trailer */}
+              <div className="relative aspect-video rounded-xl overflow-hidden bg-black">
+                <iframe
+                  src={`https://www.youtube.com/embed/${videos[0].key}?rel=0&modestbranding=1`}
+                  title={videos[0].name}
+                  className="w-full h-full"
+                  allowFullScreen
+                  allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+                  style={{ border: "none" }}
+                />
+              </div>
+              {/* Additional trailers/teasers as thumbnails */}
+              {videos.length > 1 && (
+                <div className="flex gap-3 overflow-x-auto pb-2" style={{ scrollbarWidth: "none" }}>
+                  {videos.slice(1, 6).map((video) => (
+                    <a
+                      key={video.key}
+                      href={`https://www.youtube.com/watch?v=${video.key}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-shrink-0 group"
+                    >
+                      <div className="relative w-48 aspect-video rounded-lg overflow-hidden bg-gray-800">
+                        <img
+                          src={`https://img.youtube.com/vi/${video.key}/mqdefault.jpg`}
+                          alt={video.name}
+                          className="w-full h-full object-cover group-hover:opacity-75 transition-opacity"
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="w-10 h-10 bg-red-600/80 rounded-full flex items-center justify-center">
+                            <svg className="w-4 h-4 text-white fill-white ml-0.5" viewBox="0 0 24 24">
+                              <path d="M8 5v14l11-7z"/>
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+                      <p className="text-gray-400 text-xs mt-1.5 w-48 truncate">{video.name}</p>
+                    </a>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Cast */}
         {credits.cast.length > 0 && (

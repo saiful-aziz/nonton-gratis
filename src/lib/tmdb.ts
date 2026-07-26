@@ -109,6 +109,22 @@ export async function getSimilarMovies(id: number): Promise<MovieResponse> {
   return tmdbFetch<MovieResponse>(`/movie/${id}/similar`);
 }
 
+export async function getMovieVideos(id: number): Promise<{ key: string; name: string; type: string; site: string }[]> {
+  const data = await tmdbFetch<{ results: { key: string; name: string; type: string; site: string; official: boolean }[] }>(
+    `/movie/${id}/videos`
+  );
+  // Return YouTube trailers first, then teasers, filter out non-YouTube
+  return data.results
+    .filter((v) => v.site === "YouTube")
+    .sort((a, b) => {
+      if (a.type === "Trailer" && b.type !== "Trailer") return -1;
+      if (a.type !== "Trailer" && b.type === "Trailer") return 1;
+      if (a.official && !b.official) return -1;
+      if (!a.official && b.official) return 1;
+      return 0;
+    });
+}
+
 export async function searchMovies(query: string, page = 1): Promise<MovieResponse> {
   return tmdbFetch<MovieResponse>("/search/movie", { query, page: String(page) });
 }
