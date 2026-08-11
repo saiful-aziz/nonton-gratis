@@ -149,23 +149,23 @@ export interface EmbedServer {
 
 export const EMBED_SERVERS: EmbedServer[] = [
   {
-    key: "vidsrc-mov",
-    label: "Server 1 (VidSrc Pro)",
-    getUrl: (tmdbId) => `https://vidsrc.mov/embed/movie/${tmdbId}`,
-  },
-  {
-    key: "vidsrc-icu",
-    label: "Server 2 (VidSrc)",
-    getUrl: (tmdbId) => `https://vidsrc.icu/embed/movie/${tmdbId}`,
+    key: "autoembed",
+    label: "Server 1 (AutoEmbed)",
+    getUrl: (tmdbId) => `https://autoembed.co/movie/tmdb/${tmdbId}`,
   },
   {
     key: "vidsrc-cc",
-    label: "Server 3 (VidSrc CC)",
+    label: "Server 2 (VidSrc CC)",
     getUrl: (tmdbId) => `https://vidsrc.cc/v2/embed/movie/${tmdbId}`,
   },
   {
-    key: "autoembed",
-    label: "Server 4 (AutoEmbed)",
-    getUrl: (tmdbId) => `https://autoembed.co/movie/tmdb/${tmdbId}`,
+    key: "vidsrc-xyz",
+    label: "Server 3 (VidSrc XYZ)",
+    getUrl: (tmdbId) => `https://vidsrc.xyz/embed/movie/${tmdbId}`,
+  },
+  {
+    key: "vidsrc-pro",
+    label: "Server 4 (VidSrc Pro)",
+    getUrl: (tmdbId) => `https://vidsrc.pro/embed/movie/${tmdbId}`,
   },
 ];
