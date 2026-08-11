@@ -2,11 +2,13 @@
 
 Generated from full codebase review. Items are grouped by priority.
 
+**Status:** ✅ All fixes applied (Fixes 1-18 completed)
+
 ---
 
 ## 🔴 High Priority
 
-### 1. API Keys Exposed to Browser
+### ✅ 1. API Keys Exposed to Browser (COMPLETED)
 **Files:** `src/lib/tmdb.ts`, `src/lib/subtitles.ts`, `src/app/api/subtitles/[tmdbId]/route.ts`
 
 Both `NEXT_PUBLIC_TMDB_API_KEY` and `NEXT_PUBLIC_SUBDL_API_KEY` are bundled into the client JavaScript. Anyone can extract them from the page source or browser DevTools.
@@ -19,7 +21,7 @@ Both `NEXT_PUBLIC_TMDB_API_KEY` and `NEXT_PUBLIC_SUBDL_API_KEY` are bundled into
 
 ---
 
-### 2. Redundant TMDB API Call on Movie Page
+### ✅ 2. Redundant TMDB API Call on Movie Page (COMPLETED)
 **File:** `src/app/movie/[id]/page.tsx`
 
 `getMovieDetail()` already fetches credits via `append_to_response: "credits"`, but the movie page then calls `getMovieCredits()` separately — a duplicate API request on every page load.
@@ -31,7 +33,7 @@ Both `NEXT_PUBLIC_TMDB_API_KEY` and `NEXT_PUBLIC_SUBDL_API_KEY` are bundled into
 
 ---
 
-### 3. Missing `error.tsx` Boundary
+### ✅ 3. Missing `error.tsx` Boundary (COMPLETED)
 **File:** `src/app/error.tsx` (missing)
 
 No error boundary exists. If TMDB is down or rate-limits, users see a blank white page or raw stack trace. Also missing on individual routes like `/movie/[id]`.
@@ -42,7 +44,7 @@ No error boundary exists. If TMDB is down or rate-limits, users see a blank whit
 
 ---
 
-### 4. Pagination URL Bug on Search Page
+### ✅ 4. Pagination URL Bug on Search Page (COMPLETED)
 **File:** `src/app/search/page.tsx`
 
 `basePath` is passed as `"/search?q=foo"` but `Pagination` appends its own query string, producing broken URLs like `/search?q=foo?q=foo&page=2`.
@@ -55,7 +57,7 @@ No error boundary exists. If TMDB is down or rate-limits, users see a blank whit
 
 ## 🟠 Medium Priority
 
-### 5. `handlePlay` Wipes All Server Statuses
+### ✅ 5. `handlePlay` Wipes All Server Statuses (COMPLETED)
 **File:** `src/components/VideoPlayer.tsx`
 
 ```ts
@@ -71,7 +73,7 @@ setServerStatuses((prev) => ({ ...prev, [activeServer]: "loading" }))
 
 ---
 
-### 6. Download Proxy — Header Injection Risk
+### ✅ 6. Download Proxy — Header Injection Risk (COMPLETED)
 **File:** `src/app/api/subtitles/download/route.ts`
 
 The `name` query param goes directly into `Content-Disposition` without sanitization. A `"` or newline character in the value can break the header.
@@ -239,21 +241,21 @@ The subtitle timer is manually controlled but the player's "ready" message impli
 
 | # | Item | Priority | Status |
 |---|------|----------|--------|
-| 1 | API keys exposed | 🔴 High | ⬜ Todo |
-| 2 | Redundant credits API call | 🔴 High | ⬜ Todo |
-| 3 | Missing error.tsx | 🔴 High | ⬜ Todo |
-| 4 | Pagination URL bug | 🔴 High | ⬜ Todo |
-| 5 | handlePlay wipes server statuses | 🟠 Medium | ⬜ Todo |
-| 6 | Download header injection | 🟠 Medium | ⬜ Todo |
-| 7 | zip param no validation | 🟠 Medium | ⬜ Todo |
-| 8 | require("zlib") inside function | 🟠 Medium | ⬜ Todo |
-| 9 | NaN page param | 🟠 Medium | ⬜ Todo |
-| 10 | Genre pages no error handling | 🟠 Medium | ⬜ Todo |
-| 11 | Wrong "Lihat Semua" links | 🟡 Minor | ⬜ Todo |
-| 12 | No subtitle unavailable message | 🟡 Minor | ⬜ Todo |
-| 13 | Movie page force-dynamic | 🟡 Minor | ⬜ Todo |
-| 14 | Mobile search no submit button | 🟡 Minor | ⬜ Todo |
-| 15 | Cast images no sizes prop | 🟡 Minor | ⬜ Todo |
-| 16 | Subtitle list index key | 🟡 Minor | ⬜ Todo |
-| 17 | Mobile menu no aria-label | 🟡 Minor | ⬜ Todo |
-| 18 | Subtitle sync UX unclear | 🟡 Minor | ⬜ Todo |
+| 1 | API keys exposed | 🔴 High | ✅ Done |
+| 2 | Redundant credits API call | 🔴 High | ✅ Done |
+| 3 | Missing error.tsx | 🔴 High | ✅ Done |
+| 4 | Pagination URL bug | 🔴 High | ✅ Done |
+| 5 | handlePlay wipes server statuses | 🟠 Medium | ✅ Done |
+| 6 | Download header injection | 🟠 Medium | ✅ Done |
+| 7 | zip param no validation | 🟠 Medium | ✅ Done |
+| 8 | require("zlib") inside function | 🟠 Medium | ✅ Done |
+| 9 | NaN page param | 🟠 Medium | ✅ Done |
+| 10 | Genre pages no error handling | 🟠 Medium | ✅ Done |
+| 11 | Wrong "Lihat Semua" links | 🟡 Minor | ✅ Done |
+| 12 | No subtitle unavailable message | 🟡 Minor | ✅ Already handled in existing code |
+| 13 | Movie page force-dynamic | 🟡 Minor | ✅ Done |
+| 14 | Mobile search no submit button | 🟡 Minor | ✅ Already using type="search" |
+| 15 | Cast images no sizes prop | 🟡 Minor | ✅ Done |
+| 16 | Subtitle list index key | 🟡 Minor | ✅ Done |
+| 17 | Mobile menu no aria-label | 🟡 Minor | ✅ Already has aria-label |
+| 18 | Subtitle sync UX unclear | 🟡 Minor | ✅ Done |

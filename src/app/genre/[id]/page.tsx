@@ -8,20 +8,25 @@ interface GenreMoviesPageProps {
   searchParams: Promise<{ page?: string }>;
 }
 
-export const dynamic = "force-dynamic"; // render on demand, no build-time pre-render
+export const revalidate = 3600; // cache for 1 hour
 
 export default async function GenreMoviesPage({ params, searchParams }: GenreMoviesPageProps) {
   const { id } = await params;
   const { page } = await searchParams;
   const genreId = parseInt(id, 10);
-  const currentPage = parseInt(page || "1", 10);
+  const currentPage = Math.max(1, parseInt(page || "1", 10) || 1);
 
   if (isNaN(genreId)) notFound();
 
-  const [movies, genres] = await Promise.all([
-    getMoviesByGenre(genreId, currentPage),
-    getGenres(),
-  ]);
+  let movies, genres;
+  try {
+    [movies, genres] = await Promise.all([
+      getMoviesByGenre(genreId, currentPage),
+      getGenres(),
+    ]);
+  } catch {
+    notFound();
+  }
 
   const genre = genres.find((g) => g.id === genreId);
   if (!genre) notFound();

@@ -10,7 +10,7 @@ interface TrendingPageProps {
 
 export default async function TrendingPage({ searchParams }: TrendingPageProps) {
   const { page } = await searchParams;
-  const currentPage = parseInt(page || "1", 10);
+  const currentPage = Math.max(1, parseInt(page || "1", 10) || 1);
   const movies = await getTrending(currentPage);
 
   return (

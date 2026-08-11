@@ -10,7 +10,7 @@ interface TopRatedPageProps {
 
 export default async function TopRatedPage({ searchParams }: TopRatedPageProps) {
   const { page } = await searchParams;
-  const currentPage = parseInt(page || "1", 10);
+  const currentPage = Math.max(1, parseInt(page || "1", 10) || 1);
   const movies = await getTopRated(currentPage);
 
   return (

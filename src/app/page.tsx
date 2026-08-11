@@ -21,9 +21,9 @@ export default async function HomePage() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 space-y-10 py-8">
         <MovieRow title="🔥 Sedang Trending" movies={trending.results} href="/trending" />
-        <MovieRow title="🎬 Sedang Tayang" movies={nowPlaying.results} href="/trending" />
+        <MovieRow title="🎬 Sedang Tayang" movies={nowPlaying.results} />
         <MovieRow title="⭐ Rating Tertinggi" movies={topRated.results} href="/top-rated" />
-        <MovieRow title="🎥 Film Populer" movies={popular.results} href="/trending" />
+        <MovieRow title="🎥 Film Populer" movies={popular.results} />
         <MovieRow title="📅 Akan Datang" movies={upcoming.results} />
       </div>
     </div>

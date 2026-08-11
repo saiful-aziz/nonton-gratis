@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { getGenres } from "@/lib/tmdb";
+import { notFound } from "next/navigation";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 86400; // cache for 24 hours - genres rarely change
 
 const genreIcons: Record<number, string> = {
   28: "💥", 12: "🗺️", 16: "🎨", 35: "😂", 80: "🔪", 99: "📹",
@@ -11,7 +12,12 @@ const genreIcons: Record<number, string> = {
 };
 
 export default async function GenrePage() {
-  const genres = await getGenres();
+  let genres;
+  try {
+    genres = await getGenres();
+  } catch {
+    notFound();
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">

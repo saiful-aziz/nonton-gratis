@@ -1,17 +1,19 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Star, Clock, Calendar, Globe } from "lucide-react";
-import { getMovieDetail, getMovieCredits, getSimilarMovies, getMovieVideos, getImageUrl } from "@/lib/tmdb";
+import { getMovieDetail, getSimilarMovies, getMovieVideos, getImageUrl, type Cast } from "@/lib/tmdb";
 import { searchSubtitles } from "@/lib/subtitles";
 import VideoPlayer from "@/components/VideoPlayer";
 import SubtitleList from "@/components/SubtitleList";
 import MovieRow from "@/components/MovieRow";
+import BookmarkButton from "@/components/BookmarkButton";
+import WatchHistoryTracker from "@/components/WatchHistoryTracker";
 
 interface MoviePageProps {
   params: Promise<{ id: string }>;
 }
 
-export const dynamic = "force-dynamic"; // render on demand, no build-time pre-render
+export const revalidate = 3600; // cache for 1 hour - movie metadata rarely changes
 
 export default async function MoviePage({ params }: MoviePageProps) {
   const { id } = await params;
@@ -26,12 +28,14 @@ export default async function MoviePage({ params }: MoviePageProps) {
     notFound();
   }
 
-  const [credits, similar, subtitles, videos] = await Promise.all([
-    getMovieCredits(movieId).catch(() => ({ cast: [] })),
+  const [similar, subtitles, videos] = await Promise.all([
     getSimilarMovies(movieId).catch(() => ({ page: 1, results: [], total_pages: 0, total_results: 0 })),
     searchSubtitles(movieId).catch(() => []),
     getMovieVideos(movieId).catch(() => []),
   ]);
+
+  // Credits already included via append_to_response in getMovieDetail
+  const cast = ((movie as unknown as { credits?: { cast: Cast[] } }).credits?.cast ?? []);
 
   const year = movie.release_date ? new Date(movie.release_date).getFullYear() : "N/A";
   const hours = Math.floor(movie.runtime / 60);
@@ -40,6 +44,15 @@ export default async function MoviePage({ params }: MoviePageProps) {
 
   return (
     <div>
+      {/* Watch History Tracker - invisible, auto-tracks after 30s */}
+      <WatchHistoryTracker
+        tmdbId={movie.id}
+        title={movie.title}
+        posterPath={movie.poster_path}
+        releaseDate={movie.release_date}
+        voteAverage={movie.vote_average}
+      />
+
       {/* Backdrop */}
       <div className="relative w-full h-[40vh] sm:h-[50vh]">
         <Image
@@ -108,6 +121,17 @@ export default async function MoviePage({ params }: MoviePageProps) {
                   {genre.name}
                 </a>
               ))}
+            </div>
+
+            {/* Bookmark Button */}
+            <div className="mb-4">
+              <BookmarkButton
+                tmdbId={movie.id}
+                title={movie.title}
+                posterPath={movie.poster_path}
+                releaseDate={movie.release_date}
+                voteAverage={movie.vote_average}
+              />
             </div>
 
             {/* Overview */}
@@ -195,17 +219,18 @@ export default async function MoviePage({ params }: MoviePageProps) {
         )}
 
         {/* Cast */}
-        {credits.cast.length > 0 && (
+        {cast.length > 0 && (
           <div className="mb-10">
             <h2 className="text-white text-xl font-bold mb-4">🎭 Pemeran</h2>
             <div className="flex gap-4 overflow-x-auto pb-2" style={{ scrollbarWidth: "none" }}>
-              {credits.cast.slice(0, 12).map((person) => (
+              {cast.slice(0, 12).map((person) => (
                 <div key={person.id} className="flex-shrink-0 w-24 text-center">
                   <div className="relative w-24 h-24 rounded-full overflow-hidden bg-gray-800 mx-auto mb-2">
                     <Image
                       src={getImageUrl(person.profile_path, "w200")}
                       alt={person.name}
                       fill
+                      sizes="96px"
                       className="object-cover"
                     />
                   </div>

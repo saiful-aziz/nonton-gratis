@@ -69,8 +69,8 @@ function SubGroup({ label, subtitles }: { label: string; subtitles: Subtitle[] }
         <span className="text-sm font-medium text-gray-300">{label}</span>
       </div>
       <div className="divide-y divide-gray-800/50">
-        {subtitles.slice(0, 5).map((sub, i) => (
-          <div key={i} className="px-4 py-3 flex items-center justify-between gap-4 hover:bg-gray-800/30 transition-colors">
+        {subtitles.slice(0, 5).map((sub) => (
+          <div key={sub.url} className="px-4 py-3 flex items-center justify-between gap-4 hover:bg-gray-800/30 transition-colors">
             <div className="flex-1 min-w-0">
               <p className="text-white text-sm truncate">{sub.release_name || sub.name}</p>
               <div className="flex items-center gap-3 mt-1">

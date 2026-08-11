@@ -142,7 +142,13 @@ export default function SubtitleOverlay({ tmdbId, isFullscreen = false }: Subtit
     setError(null);
   }, []);
 
-  if (tracks.length === 0) return null;
+  if (tracks.length === 0) {
+    return (
+      <div className="absolute bottom-0 left-0 right-0 z-20 flex items-center justify-center px-3 py-2 bg-gradient-to-t from-black/70 to-transparent">
+        <span className="text-gray-400 text-xs">Subtitle tidak tersedia</span>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -193,6 +199,7 @@ export default function SubtitleOverlay({ tmdbId, isFullscreen = false }: Subtit
                   ? "bg-red-600 text-white"
                   : "bg-black/60 text-gray-300 hover:bg-black/80"
               }`}
+              title="Subtitle dikontrol manual — pilih bahasa, tekan Play Sub, lalu sesuaikan waktu"
             >
               <Subtitles className="w-4 h-4" />
               {activeTrack

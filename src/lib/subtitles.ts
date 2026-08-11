@@ -1,4 +1,4 @@
-const SUBDL_API_KEY = process.env.NEXT_PUBLIC_SUBDL_API_KEY || "";
+const SUBDL_API_KEY = process.env.SUBDL_API_KEY || "";
 const SUBDL_BASE = "https://api.subdl.com/api/v1/subtitles";
 const SUBDL_DL_BASE = "https://dl.subdl.com/subtitle";
 

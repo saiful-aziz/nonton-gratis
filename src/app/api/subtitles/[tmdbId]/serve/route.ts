@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { inflateRawSync } from "zlib";
 
 const SUBDL_DL_BASE = "https://dl.subdl.com/subtitle";
 
@@ -15,6 +16,10 @@ export async function GET(request: NextRequest) {
 
   if (!zip) {
     return new NextResponse("Missing zip parameter", { status: 400 });
+  }
+
+  if (!/^[\w\-]+\.zip$/.test(zip)) {
+    return new NextResponse("Invalid zip parameter", { status: 400 });
   }
 
   try {
@@ -132,9 +137,8 @@ function extractEntry(buffer: Buffer, entry: { compressionMethod: number; compre
   }
   if (entry.compressionMethod === 8) {
     try {
-      const zlib = require("zlib");
       const compressed = buffer.subarray(entry.dataStart, entry.dataStart + entry.compressedSize);
-      const decompressed = zlib.inflateRawSync(compressed);
+      const decompressed = inflateRawSync(compressed);
       return decompressed.toString("utf-8");
     } catch {
       return null;

@@ -36,7 +36,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       {movies.results.length > 0 ? (
         <>
           <MovieGrid movies={movies.results} />
-          <Pagination currentPage={currentPage} totalPages={movies.total_pages} basePath={`/search?q=${encodeURIComponent(query)}`} />
+          <Pagination currentPage={currentPage} totalPages={movies.total_pages} basePath="/search" extraParams={{ q: query }} />
         </>
       ) : (
         <div className="text-center py-20">

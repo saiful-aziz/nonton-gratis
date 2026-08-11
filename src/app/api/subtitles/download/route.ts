@@ -8,7 +8,8 @@ import { NextRequest, NextResponse } from "next/server";
  */
 export async function GET(request: NextRequest) {
   const url = request.nextUrl.searchParams.get("url");
-  const name = request.nextUrl.searchParams.get("name") || "subtitle.zip";
+  const rawName = request.nextUrl.searchParams.get("name") || "subtitle.zip";
+  const name = rawName.replace(/[^\w\s.\-]/g, "_"); // sanitize for Content-Disposition
 
   if (!url) {
     return new NextResponse("Missing url parameter", { status: 400 });

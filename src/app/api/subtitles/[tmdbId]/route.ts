@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const SUBDL_API_KEY = process.env.NEXT_PUBLIC_SUBDL_API_KEY || "";
+const SUBDL_API_KEY = process.env.SUBDL_API_KEY || "";
 const SUBDL_BASE = "https://api.subdl.com/api/v1/subtitles";
 
 const LANG_LABELS: Record<string, string> = {

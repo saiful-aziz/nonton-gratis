@@ -73,7 +73,7 @@ export default function VideoPlayer({ tmdbId, imdbId, title }: VideoPlayerProps)
 
   const handlePlay = useCallback(() => {
     setPlaying(true);
-    setServerStatuses({ [activeServer]: "loading" });
+    setServerStatuses((prev) => ({ ...prev, [activeServer]: "loading" }));
     const id = startTimeout(activeServer);
     setTimeoutIds({ [activeServer]: id });
   }, [activeServer, startTimeout]);
