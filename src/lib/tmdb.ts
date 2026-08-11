@@ -154,18 +154,18 @@ export const EMBED_SERVERS: EmbedServer[] = [
     getUrl: (tmdbId) => `https://autoembed.co/movie/tmdb/${tmdbId}`,
   },
   {
-    key: "vidsrc-cc",
-    label: "Server 2 (VidSrc CC)",
-    getUrl: (tmdbId) => `https://vidsrc.cc/v2/embed/movie/${tmdbId}`,
-  },
-  {
-    key: "vidsrc-xyz",
-    label: "Server 3 (VidSrc XYZ)",
-    getUrl: (tmdbId) => `https://vidsrc.xyz/embed/movie/${tmdbId}`,
+    key: "vidsrc-to",
+    label: "Server 2 (VidSrc)",
+    getUrl: (tmdbId) => `https://vidsrc.to/embed/movie/${tmdbId}`,
   },
   {
     key: "vidsrc-pro",
-    label: "Server 4 (VidSrc Pro)",
+    label: "Server 3 (VidSrc Pro)",
     getUrl: (tmdbId) => `https://vidsrc.pro/embed/movie/${tmdbId}`,
+  },
+  {
+    key: "vidsrc-net",
+    label: "Server 4 (VidSrc Net)",
+    getUrl: (tmdbId) => `https://vidsrc.net/embed/movie/${tmdbId}`,
   },
 ];
