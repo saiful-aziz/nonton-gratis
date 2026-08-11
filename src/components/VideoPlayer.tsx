@@ -189,7 +189,7 @@ export default function VideoPlayer({ tmdbId, imdbId, title }: VideoPlayerProps)
         <div className="flex items-center gap-2 bg-green-950/50 border border-green-800/30 rounded-lg px-4 py-2.5">
           <CheckCircle className="w-4 h-4 text-green-400 shrink-0" />
           <p className="text-green-300 text-sm">
-            Video siap. Gunakan tombol <span className="font-medium">Subtitle</span> di bawah player untuk subtitle Indonesia.
+            Video siap. Klik tombol <span className="font-medium">Subtitle</span> (kanan bawah player) untuk mengaktifkan subtitle Indonesia/English.
           </p>
         </div>
       )}

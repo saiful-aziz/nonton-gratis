@@ -2,9 +2,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Star, Clock, Calendar, Globe } from "lucide-react";
 import { getMovieDetail, getSimilarMovies, getMovieVideos, getImageUrl, type Cast } from "@/lib/tmdb";
-import { searchSubtitles } from "@/lib/subtitles";
 import VideoPlayer from "@/components/VideoPlayer";
-import SubtitleList from "@/components/SubtitleList";
 import MovieRow from "@/components/MovieRow";
 import BookmarkButton from "@/components/BookmarkButton";
 import WatchHistoryTracker from "@/components/WatchHistoryTracker";
@@ -28,9 +26,8 @@ export default async function MoviePage({ params }: MoviePageProps) {
     notFound();
   }
 
-  const [similar, subtitles, videos] = await Promise.all([
+  const [similar, videos] = await Promise.all([
     getSimilarMovies(movieId).catch(() => ({ page: 1, results: [], total_pages: 0, total_results: 0 })),
-    searchSubtitles(movieId).catch(() => []),
     getMovieVideos(movieId).catch(() => []),
   ]);
 
@@ -162,11 +159,11 @@ export default async function MoviePage({ params }: MoviePageProps) {
           <VideoPlayer tmdbId={movie.id} imdbId={movie.imdb_id} title={movie.title} />
         </div>
 
-        {/* Subtitle Downloads */}
-        <div className="mb-10">
+        {/* Subtitle Downloads - Hidden: subtitles already available in player overlay */}
+        {/* <div className="mb-10">
           <h2 className="text-white text-xl font-bold mb-4">📝 Subtitle</h2>
           <SubtitleList subtitles={subtitles} movieTitle={movie.title} />
-        </div>
+        </div> */}
 
         {/* Trailer */}
         {videos.length > 0 && (
