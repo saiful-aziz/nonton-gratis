@@ -17,11 +17,11 @@
     "bcryptjs": "^3.0.3",
     "better-sqlite3": "^13.0.1",
     "lucide-react": "^1.14.0",
-    "next": "16.2.4",
+    "next": "16.3.3",
     "next-auth": "^5.0.0-beta.32",
     "prisma": "^6.19.3",
-    "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -32,5 +32,13 @@
     "eslint-config-next": "16.2.4",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "allowScripts": {
+    "@prisma/client@6.19.3": true,
+    "@prisma/engines@6.19.3": true,
+    "prisma@6.19.3": true,
+    "better-sqlite3@12.11.1": true,
+    "better-sqlite3@13.0.3": true,
+    "unrs-resolver@1.12.2": true
   }
 }
